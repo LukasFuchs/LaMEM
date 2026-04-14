@@ -201,11 +201,12 @@ PetscErrorCode setUpPhase(ConstEqCtx *ctx, PetscInt ID)
 	}
 
 	// LINEAR DIFFUSION CREEP (NEWTONIAN)
-	if(mat->Bd)
-	{
-		Q          = (mat->Ed + p_visc*mat->Vd)/RT;
-		ctx->A_dif = mat->Bd*exp(-Q)*mfd;
-	}
+	//if(mat->Bd)
+	//{
+	//	Q          = (mat->Ed + p_visc*mat->Vd)/RT;
+	//	ctx->A_dif = mat->Bd*exp(-Q)*mfd;
+	//}
+
 
 	// PS-CREEP
 	else if(mat->Bps && T)
@@ -248,6 +249,13 @@ PetscErrorCode setUpPhase(ConstEqCtx *ctx, PetscInt ID)
 	if(mat->gamma_fk && T)
 	{
 		ctx->A_fk = 1.0/(mat->eta_fk*exp(-mat->gamma_fk*(T-mat->TRef_fk)))/2.0;
+	}
+
+	// ARRHENIUS-LIKE VISCOSITY (TACKLEY, 2000)
+	if(mat->TRef_ar && T)
+	{
+		ctx->A_dif = 1.0/(exp(mat->Ed/(RT+mat->TRef_ar))/mat->Bd)/2.0;
+		//ctx->A_arr = 1.0/(mat->eta_ar*exp(-mat->Ear/RT/(mat->T_eta + mat->T_O))*exp(mat->Ear/(T+mat->T_O)))
 	}
 
 	if(PetscIsInfOrNanScalar(ctx->A_dif)) ctx->A_dif = 0.0;

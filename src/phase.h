@@ -171,9 +171,12 @@ public:
 	PetscScalar  gamma;             // approximation parameter                    [ ]
 	PetscScalar  q;                 // stress-dependence parameter                [ ]
 	// Frank-Kamenetzky parameters
-    PetscScalar  gamma_fk;          // parameter in Frank-Kamenetzky approximation [1/K]
+    	PetscScalar  gamma_fk;          // parameter in Frank-Kamenetzky approximation [1/K]
 	PetscScalar  TRef_fk;           // Frank-Kamenetzky reference Temperature [K]
 	PetscScalar  eta_fk;            // reference viscosity for Frank-Kamenetzky [Pas]
+	
+	// Arrhenius like (Tackley, 2000)
+	PetscScalar  TRef_ar; 		// Offset temperature [K]
 	
 	// dc-creep
 	PetscScalar  Bdc;               // pre-exponential constant                   [1/s]

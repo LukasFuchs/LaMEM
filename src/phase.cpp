@@ -416,6 +416,14 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	ierr = getScalarParam(fb, _OPTIONAL_, "TRef_fk",  &m->TRef_fk, 1, 1.0); CHKERRQ(ierr);
 	ierr = getScalarParam(fb, _OPTIONAL_, "eta_fk",   &m->eta_fk,  1, 1.0); CHKERRQ(ierr);
 	//=================================================================================
+	// Arrhenius like (Tackley, 2000)
+	//=================================================================================
+	ierr = getScalarParam(fb, _OPTIONAL_, "TRef_ar", &m->TRef_ar,1, 1.0); CHKERRQ(ierr);
+	//ierr = getScalarParam(fb, _OPTIONAL_, "eta_ar", &m->eta_ar,1, 1.0); CHKERRQ(ierr);
+	//ierr = getScalarParam(fb, _OPTIONAL_, "Ear", &m->Earr,1, 1.0); CHKERRQ(ierr);
+	//ierr = getScalarParam(fb, _OPTIONAL_, "T_eta", &m->T_eta,1, 1.0); CHKERRQ(ierr);
+	//ierr = getScalarParam(fb, _OPTIONAL_, "T_O", &m->T_O,1, 1.0); CHKERRQ(ierr);
+	//=================================================================================
 	// dc-creep
 	//=================================================================================
 	ierr = getScalarParam(fb, _OPTIONAL_, "Bdc",      &m->Bdc,   1, 1.0); CHKERRQ(ierr);
@@ -563,6 +571,12 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Frank-Kamenetzky parameters are incomplete for phase %lld (eta_fk + gamma_fk)", (LLD)ID);
 	}
 
+	// Arrhenius-like 
+		if((m->TRef_ar && (!m->Ed)) || (m->TRef_ar && (!m->Bd)) )
+	{
+		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Arrhenius-like parameters are incomplete for phase %lld (Bd + Ed + TRef_ar)", (LLD)ID);
+	}
+
 	// DC
 
 	if(m->Bdc && (!m->Edc || !m->Rdc || !m->mu))
@@ -701,7 +715,9 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 		MatPrintScalParam(m->gamma_fk, "gamma_fk",  "[1/K]",  scal, title, &print_title);
 		MatPrintScalParam(m->TRef_fk,  "TRef_fk",   "[C]",    scal, title, &print_title);
 		if(m->TRef_fk == 0.0 && m->eta_fk) PetscPrintf(PETSC_COMM_WORLD, "TRef_fk = %g [C]", m->TRef_fk);
-		
+
+		sprintf(title, "   (Arr)    : "); print_title = 1;
+                MatPrintScalParam(m->TRef_ar,  "TRef_ar",   "[C]",    scal, title, &print_title);
 
 		sprintf(title, "   (dc)     : "); print_title = 1;
 		MatPrintScalParam(m->Bdc,   "Bdc",  "[1/s]",   scal, title, &print_title);
@@ -775,6 +791,9 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	m->gamma_fk = m->gamma_fk * scal->temperature;
 	m->TRef_fk  = (m->TRef_fk + scal->Tshift)/scal->temperature;
 	m->eta_fk  /= scal->viscosity;
+
+	// Arrhenius-like
+	m->TRef_ar = (m->TRef_ar + scal->Tshift)/scal->temperature; 
 
 	// elasticity
 	m->G      /= scal->stress_si;
