@@ -418,11 +418,10 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	//=================================================================================
 	// Arrhenius like (Tackley, 2000)
 	//=================================================================================
-	ierr = getScalarParam(fb, _OPTIONAL_, "TRef_ar", &m->TRef_ar,1, 1.0); CHKERRQ(ierr);
-	//ierr = getScalarParam(fb, _OPTIONAL_, "eta_ar", &m->eta_ar,1, 1.0); CHKERRQ(ierr);
-	//ierr = getScalarParam(fb, _OPTIONAL_, "Ear", &m->Earr,1, 1.0); CHKERRQ(ierr);
-	//ierr = getScalarParam(fb, _OPTIONAL_, "T_eta", &m->T_eta,1, 1.0); CHKERRQ(ierr);
-	//ierr = getScalarParam(fb, _OPTIONAL_, "T_O", &m->T_O,1, 1.0); CHKERRQ(ierr);
+	ierr = getScalarParam(fb, _OPTIONAL_, "Ear",       &m->Ear,    1, 1.0); CHKERRQ(ierr);
+	ierr = getScalarParam(fb, _OPTIONAL_, "eta_ar0",   &m->eta_ar0,  1, 1.0); CHKERRQ(ierr);
+	ierr = getScalarParam(fb, _OPTIONAL_, "T_E",   	   &m->T_E,  1, 1.0); CHKERRQ(ierr);
+	ierr = getScalarParam(fb, _OPTIONAL_, "T_O",   	   &m->T_O,  1, 1.0); CHKERRQ(ierr);
 	//=================================================================================
 	// dc-creep
 	//=================================================================================
@@ -572,9 +571,9 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	}
 
 	// Arrhenius-like 
-		if((m->TRef_ar && (!m->Ed)) || (m->TRef_ar && (!m->Bd)) )
+		if(m->eta_ar0 && (!m->Ear || !m->T_E || !m->T_O ))
 	{
-		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Arrhenius-like parameters are incomplete for phase %lld (Bd + Ed + TRef_ar)", (LLD)ID);
+		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Arrhenius-like parameters are incomplete for phase %lld (eta_ar0 + Ear + T_E + T_O)", (LLD)ID);
 	}
 
 	// DC
@@ -647,9 +646,9 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	m->Kb = Kb;
 
 	// check that at least one essential deformation mechanism is specified
-	if(!m->Bd && !m->Bn && !m->G && !m->Bdc && !m->eta_fk)
+	if(!m->Bd && !m->Bn && !m->G && !m->Bdc && !m->eta_fk && !m->eta_ar0)
 	{
-		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "At least one of the parameter (set) Bd (eta), Bn (eta0, e0), Bdc, G, eta_fk must be specified for phase %lld", (LLD)ID);
+		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "At least one of the parameter (set) Bd (eta), Bn (eta0, e0), Bdc, G, eta_fk, eta_ar0 must be specified for phase %lld", (LLD)ID);
 	}
 
 	// PRINT (optional)
@@ -717,7 +716,10 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 		if(m->TRef_fk == 0.0 && m->eta_fk) PetscPrintf(PETSC_COMM_WORLD, "TRef_fk = %g [C]", m->TRef_fk);
 
 		sprintf(title, "   (Arr)    : "); print_title = 1;
-                MatPrintScalParam(m->TRef_ar,  "TRef_ar",   "[C]",    scal, title, &print_title);
+        MatPrintScalParam(m->eta_ar0,   "eta_ar0",    "[Pa*s]", scal, title, &print_title);
+		MatPrintScalParam(m->T_E,  "T_E",   "[K]",    scal, title, &print_title);
+		MatPrintScalParam(m->T_O,  "T_O",   "[K]",    scal, title, &print_title);
+		MatPrintScalParam(m->Ear,  "Ear",   "[J/mol]",   scal, title, &print_title);
 
 		sprintf(title, "   (dc)     : "); print_title = 1;
 		MatPrintScalParam(m->Bdc,   "Bdc",  "[1/s]",   scal, title, &print_title);
@@ -793,7 +795,10 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	m->eta_fk  /= scal->viscosity;
 
 	// Arrhenius-like
-	m->TRef_ar = (m->TRef_ar + scal->Tshift)/scal->temperature; 
+	// m->TRef_ar = (m->TRef_ar + scal->Tshift)/scal->temperature; 
+	m->eta_ar0  /= scal->viscosity;
+	m->T_E  /= scal->temperature; 
+	m->T_O  /= scal->temperature;
 
 	// elasticity
 	m->G      /= scal->stress_si;

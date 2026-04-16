@@ -81,6 +81,7 @@ struct SolVarCell
 	PetscScalar  DIIdis;        // relative dislocation creep strain rate
 	PetscScalar  DIIprl;        // relative Peierls creep strain rate
 	PetscScalar  DIIfk;         // relative Frank-Kamenetzky creep strain rate
+	PetscScalar  DIIar; 		// relative Arrhenius-like creep strain rate
 	PetscScalar  DIIpl;         // relative plastic strain rate
 	PetscScalar  yield;         // average yield stress in control volume
 

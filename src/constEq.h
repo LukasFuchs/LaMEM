@@ -74,6 +74,7 @@ struct ConstEqCtx
 	PetscScalar  A_prl;  // Peierls constant
 	PetscScalar  N_prl;  // Peierls exponent
 	PetscScalar  A_fk;   // Frank-Kamenetzky constant
+	PetscScalar  A_ar;   // Arrhenius-like constant
 	PetscScalar  taupl;  // plastic yield stress
 	PetscScalar  eta_vp; // regularization viscosity
 	
@@ -85,6 +86,7 @@ struct ConstEqCtx
 	PetscScalar  DIIdis; // dislocation creep strain rate
 	PetscScalar  DIIprl; // Peierls creep strain rate
 	PetscScalar  DIIfk;  // Frank-Kamenetzky strain rate
+	PetscScalar  DIIar;  // Arrhenius-like strain rate
 	PetscScalar  DIIpl;  // plastic strain rate
 	PetscScalar  yield;  // yield stress
 };
