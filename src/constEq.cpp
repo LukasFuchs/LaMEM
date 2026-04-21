@@ -255,7 +255,7 @@ PetscErrorCode setUpPhase(ConstEqCtx *ctx, PetscInt ID)
 	if(mat->Ear && T)
 	{
 		eta_ar = mat->eta_ar0*exp(-mat->Ear/(ctrl->Rugc*(mat->T_E + mat->T_O)));
-		ctx->A_ar = 1.0/(eta_ar*exp(mat->Ear/(ctrl->Rugc*(T + mat->T_O))))/2.0;
+		ctx->A_ar = 1.0/(eta_ar*exp(mat->Ear/(ctrl->Rugc*((abs(T - ctrl->Tcorr)) + mat->T_O))))/2.0;
 	}
 
 	if(PetscIsInfOrNanScalar(ctx->A_dif)) ctx->A_dif = 0.0;

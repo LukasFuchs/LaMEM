@@ -144,6 +144,7 @@ struct Controls
 	PetscScalar eta_max;        // maximum viscosity
 	PetscScalar eta_ref;        // reference viscosity (initial guess)
 	PetscScalar TRef;           // reference temperature
+	PetscScalar Tcorr; 	    // Correction term
 	PetscScalar Rugc;           // universal gas constant
 	PetscScalar minCh;          // minimum cohesion
 	PetscScalar minFr;          // minimum friction

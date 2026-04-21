@@ -63,6 +63,7 @@ PetscErrorCode JacResCreate(JacRes *jr, FB *fb)
 	ctrl->printNorms   =  0;			// print norms of velocity/pressure/temperature?
 	ctrl->Adiabatic_gr = 0.0;
 	
+	
 	if(scal->utype != _NONE_)
 	{
 		ctrl->Rugc      = 8.3144621;
@@ -295,6 +296,7 @@ PetscErrorCode JacResCreate(JacRes *jr, FB *fb)
 	ctrl->eta_ref        /=  scal->viscosity;
 	ctrl->TRef            = (ctrl->TRef + scal->Tshift)/scal->temperature;
 	ctrl->Rugc           *=  scal->temperature;
+	ctrl->Tcorr 	      =  scal->Tshift/scal->temperature; 
 	ctrl->minCh          /=  scal->stress_si;
 	ctrl->minFr          /=  scal->angle;
 	ctrl->tauUlt         /=  scal->stress_si;

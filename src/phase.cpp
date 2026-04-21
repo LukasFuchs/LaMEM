@@ -573,7 +573,7 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	// Arrhenius-like 
 		if(m->eta_ar0 && (!m->Ear || !m->T_E || !m->T_O ))
 	{
-		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Arrhenius-like parameters are incomplete for phase %lld (eta_ar0 + Ear + T_E + T_O)", (LLD)ID);
+		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Arrhenius-like parameters are incomplete for phase %lld (eta_ar0 + Ear + T_E + T_O )", (LLD)ID);
 	}
 
 	// DC
@@ -795,9 +795,9 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	m->eta_fk  /= scal->viscosity;
 
 	// Arrhenius-like
-	// m->TRef_ar = (m->TRef_ar + scal->Tshift)/scal->temperature; 
 	m->eta_ar0  /= scal->viscosity;
 	m->T_E  /= scal->temperature; 
+	//printf("%f\n",scal->temperature);
 	m->T_O  /= scal->temperature;
 
 	// elasticity
