@@ -796,9 +796,11 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 
 	// Arrhenius-like
 	m->eta_ar0  /= scal->viscosity;
-	m->T_E  /= scal->temperature; 
+	//m->T_E  /= scal->temperature; 
+	m->T_E   = (m->T_E - scal->Tshift)/scal->temperature;
 	//printf("%f\n",scal->temperature);
-	m->T_O  /= scal->temperature;
+	//m->T_O  /= scal->temperature;
+	m->T_O   = (m->T_O - scal->Tshift)/scal->temperature; 
 
 	// elasticity
 	m->G      /= scal->stress_si;
