@@ -785,6 +785,10 @@
         eta_fk     = 1e20   # reference viscosity for Frank-Kamenetzky viscosity
         gamma_fk   = 1e-3   # gamma parameter for Frank-Kamenetzky viscosity
         TRef_fk    = 1000.0 # reference Temperature for Frank-Kamenetzky viscosity (if not set it is 0°C) 
+        Ear        = 248868 # Activation energy for Arrhenius-like viscosity (J/mol) (Tackley, 2000);  Ear = E_A * R_G * DT 
+        eta_ar0    = 1e23   # Reference viscosity for Arrhenius-like viscosity (Pa s) 
+        T_E        = 786    # Reference temperature for Arrhenius-like viscosity at which eta(T_E) = eta_ar0 (K) 
+        T_O        = 1573   # Offset temperature for Arrhenius-like viscosity (K)	
         ch         = 2e7    # cohesion
         fr         = 30.0   # friction angle
         eta_st     = 1e19   # stabilization viscosity (minimum viscosity for this phase; default is eta_min)
