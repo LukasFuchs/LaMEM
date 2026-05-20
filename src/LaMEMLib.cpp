@@ -117,6 +117,17 @@ PetscErrorCode LaMEMLibMain(void *param, FB *fb)
 	{
 		// open restart database
 		ierr = LaMEMLibLoadRestart(&lm, fb); CHKERRQ(ierr);
+		// lm.ts.nstep_max = 2000;
+		// full clean fix
+		// re-read/override runtime control parameters 
+		// TSSolCreate(&lm.ts, fb, PETSC_TRUE);
+		
+		// Alternative 
+		// override run-control parameters from input/command line
+		ierr = getIntParam(fb, _OPTIONAL_, "nstep_max", &lm.ts.nstep_max, 1, -1); CHKERRQ(ierr);
+		ierr = getScalarParam(fb, _OPTIONAL_, "time_end", &lm.ts.time_end, 1, lm.scal.time); CHKERRQ(ierr);
+		ierr = getIntParam(fb, _OPTIONAL_, "nstep_rdb", &lm.ts.nstep_rdb, 1, -1); CHKERRQ(ierr);
+		ierr = getIntParam(fb, _OPTIONAL_, "nstep_out", &lm.ts.nstep_out, 1, -1); CHKERRQ(ierr);
 	}
 
 	//======
