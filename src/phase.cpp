@@ -414,6 +414,7 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	ierr = getScalarParam(fb, _OPTIONAL_, "eta_ar0",   &m->eta_ar0,  1, 1.0); CHKERRQ(ierr);
 	ierr = getScalarParam(fb, _OPTIONAL_, "T_E",   	   &m->T_E,  1, 1.0); CHKERRQ(ierr);
 	ierr = getScalarParam(fb, _OPTIONAL_, "T_O",   	   &m->T_O,  1, 1.0); CHKERRQ(ierr);
+	ierr = getScalarParam(fb, _OPTIONAL_, "T_s",       &m->T_s,  1, 1.0); CHKERRQ(ierr);
 	//=================================================================================
 	// dc-creep
 	//=================================================================================
@@ -562,10 +563,10 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Frank-Kamenetzky parameters are incomplete for phase %lld (eta_fk + gamma_fk)", (LLD)ID);
 	}
 
-	// Arrhenius-like 
-		if(m->eta_ar0 && (!m->Ear || !m->T_E || !m->T_O ))
+	// Arrhenius-like
+	if((m->eta_ar0 || m->Ear) && !(m->eta_ar0 && m->Ear))
 	{
-		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Arrhenius-like parameters are incomplete for phase %lld (eta_ar0 + Ear + T_E + T_O )", (LLD)ID);
+		SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_USER, "Arrhenius-like parameters are incomplete for phase %lld (eta_ar0 + Ear [+ T_E + T_O + T_s])", (LLD)ID);
 	}
 
 	// DC
@@ -709,8 +710,9 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 
 		sprintf(title, "   (Arr)    : "); print_title = 1;
         MatPrintScalParam(m->eta_ar0,   "eta_ar0",    "[Pa*s]", scal, title, &print_title);
-		MatPrintScalParam(m->T_E,  "T_E",   "[K]",    scal, title, &print_title);
+		MatPrintScalParam(m->T_E,  "T_E",   "[C]",    scal, title, &print_title);
 		MatPrintScalParam(m->T_O,  "T_O",   "[K]",    scal, title, &print_title);
+		if(m->T_s == 0.0 && m->Ear) PetscPrintf(PETSC_COMM_WORLD, "T_s = %g [C]  ", m->T_s);
 		MatPrintScalParam(m->Ear,  "Ear",   "[J/mol]",   scal, title, &print_title);
 
 		sprintf(title, "   (dc)     : "); print_title = 1;
@@ -787,12 +789,10 @@ PetscErrorCode DBMatReadPhase(DBMat *dbm, FB *fb, PetscBool PrintOutput)
 	m->eta_fk  /= scal->viscosity;
 
 	// Arrhenius-like
-	m->eta_ar0  /= scal->viscosity;
-	//m->T_E  /= scal->temperature; 
-	m->T_E   = (m->T_E - scal->Tshift)/scal->temperature;
-	//printf("%f\n",scal->temperature);
-	//m->T_O  /= scal->temperature;
-	m->T_O   = (m->T_O - scal->Tshift)/scal->temperature; 
+	m->eta_ar0 /=  scal->viscosity;
+	m->T_E      = (m->T_E + scal->Tshift)/scal->temperature; // temperature -> absolute, nondimensional
+	m->T_s      = (m->T_s + scal->Tshift)/scal->temperature; // temperature -> absolute, nondimensional
+	m->T_O     /=  scal->temperature;                        // temperature difference: no shif
 
 	// elasticity
 	m->G      /= scal->stress_si;

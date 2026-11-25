@@ -178,6 +178,7 @@ public:
 	PetscScalar  eta_ar0; 		// Reference Viscosity                        [ Pa s ]
 	PetscScalar  T_E;           	// Reference temperature                      [ K ]
 	PetscScalar  T_O;           	// Offset temperature                         [ K ]
+	PetscScalar  T_s; 		// Reference (surface) temperature
 	PetscScalar  Ear; 		// Activation Energy                          [ J/mol ]
 	// dc-creep
 	PetscScalar  Bdc;               // pre-exponential constant                   [1/s]

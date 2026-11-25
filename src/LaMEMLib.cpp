@@ -128,6 +128,9 @@ PetscErrorCode LaMEMLibMain(void *param, FB *fb)
 		ierr = getScalarParam(fb, _OPTIONAL_, "time_end", &lm.ts.time_end, 1, lm.scal.time); CHKERRQ(ierr);
 		ierr = getIntParam(fb, _OPTIONAL_, "nstep_rdb", &lm.ts.nstep_rdb, 1, -1); CHKERRQ(ierr);
 		ierr = getIntParam(fb, _OPTIONAL_, "nstep_out", &lm.ts.nstep_out, 1, -1); CHKERRQ(ierr);
+		ierr = getScalarParam(fb, _OPTIONAL_, "dt_max", &lm.ts.dt_max, 1, lm.scal.time); CHKERRQ(ierr);
+		ierr = getScalarParam(fb, _OPTIONAL_, "inc_dt", &lm.ts.inc_dt, 1, 1.0); CHKERRQ(ierr);
+		ierr = getScalarParam(fb, _OPTIONAL_, "CFL", &lm.ts.CFL, 1, 1.0); CHKERRQ(ierr);
 	}
 
 	//======

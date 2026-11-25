@@ -309,7 +309,6 @@ PetscErrorCode JacResCreate(JacRes *jr, FB *fb)
 	ctrl->eta_ref        /=  scal->viscosity;
 	ctrl->TRef            = (ctrl->TRef + scal->Tshift)/scal->temperature;
 	ctrl->Rugc           *=  scal->temperature;
-	ctrl->Tcorr 	      =  scal->Tshift/scal->temperature; 
 	ctrl->minCh          /=  scal->stress_si;
 	ctrl->minFr          /=  scal->angle;
 	ctrl->tauUlt         /=  scal->stress_si;

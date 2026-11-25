@@ -252,10 +252,12 @@ PetscErrorCode setUpPhase(ConstEqCtx *ctx, PetscInt ID)
 	}
 
 	// ARRHENIUS-LIKE VISCOSITY (TACKLEY, 2000)
+	// eta(T) = eta_ar0*exp( Ear/R * ( 1/(T - T_s + T_O) - 1/(T_E - T_s + T_O) ) )
+	// nondimensional Tackley form: T_s = T_top, T_O = 1, T_E = 0.5 (in units of T_bot - T_top)
 	if(mat->Ear && T)
 	{
-		eta_ar = mat->eta_ar0*exp(-mat->Ear/(ctrl->Rugc*(mat->T_E + mat->T_O)));
-		ctx->A_ar = 1.0/(eta_ar*exp(mat->Ear/(ctrl->Rugc*((abs(T - ctrl->Tcorr)) + mat->T_O))))/2.0;
+		eta_ar    = mat->eta_ar0*exp(mat->Ear/ctrl->Rugc*(1.0/(T - mat->T_s + mat->T_O) - 1.0/(mat->T_E - mat->T_s + mat->T_O)));
+		ctx->A_ar = 1.0/eta_ar/2.0;
 	}
 
 	if(PetscIsInfOrNanScalar(ctx->A_dif)) ctx->A_dif = 0.0;
